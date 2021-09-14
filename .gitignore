@@ -1,8 +1,4 @@
 /node_modules
-/dist-cjs
-/dist-es2015
-/dist-types
-/dist
 /src/.vs
 /src/bin
 /src/obj
