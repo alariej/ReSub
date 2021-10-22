@@ -11,6 +11,25 @@
 * triggers will be queued for ALL stores until the block is popped, at which point all queued triggers will fire simultaneously.
 * Stores can mark themselves as opt-out of the trigger-block logic for critical stores that must flow under all conditions.
 */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -38,21 +57,20 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.StoreBase = void 0;
 var Instrumentation = __importStar(require("./Instrumentation"));
 var Options_1 = __importDefault(require("./Options"));
 var utils_1 = require("./utils");
@@ -78,7 +96,7 @@ var StoreBase = /** @class */ (function () {
     };
     StoreBase.popTriggerBlock = function () {
         this._triggerBlockCount--;
-        utils_1.assert(this._triggerBlockCount >= 0, 'Over-popped trigger blocks!');
+        (0, utils_1.assert)(this._triggerBlockCount >= 0, 'Over-popped trigger blocks!');
         if (this._triggerBlockCount === 0) {
             StoreBase._resolveCallbacks();
         }
@@ -109,7 +127,7 @@ var StoreBase = /** @class */ (function () {
         }
         var bypassBlock = this._bypassTriggerBlocks;
         // trigger(0) is valid, ensure that we catch this case
-        if (!keyOrKeys && !utils_1.isNumber(keyOrKeys)) {
+        if (!keyOrKeys && !(0, utils_1.isNumber)(keyOrKeys)) {
             try {
                 // Inspecific key, so generic callback call
                 for (var _k = __values(this._subscriptions.values()), _l = _k.next(); !_l.done; _l = _k.next()) {
@@ -163,7 +181,7 @@ var StoreBase = /** @class */ (function () {
             }
         }
         else {
-            var keys = utils_1.normalizeKeys(keyOrKeys);
+            var keys = (0, utils_1.normalizeKeys)(keyOrKeys);
             try {
                 // Key list, so go through each key and queue up the callback
                 for (var keys_1 = __values(keys), keys_1_1 = keys_1.next(); !keys_1_1.done; keys_1_1 = keys_1.next()) {
@@ -267,7 +285,7 @@ var StoreBase = /** @class */ (function () {
         StoreBase._updateExistingMeta(existingMeta, throttledUntil, bypassBlock);
         if (existingMeta === undefined) {
             // We need to clone keys in order to prevent accidental by-ref mutations
-            StoreBase._pendingCallbacks.set(callback, { keys: __spread(keys), throttledUntil: throttledUntil, bypassBlock: bypassBlock });
+            StoreBase._pendingCallbacks.set(callback, { keys: __spreadArray([], __read(keys), false), throttledUntil: throttledUntil, bypassBlock: bypassBlock });
         }
         else if (existingMeta.keys === null) {
             // Do nothing since it's already an all-key-trigger
@@ -309,7 +327,7 @@ var StoreBase = /** @class */ (function () {
                     continue;
                 }
                 // Do a quick dedupe on keys
-                var uniquedKeys = meta.keys ? utils_1.uniq(meta.keys) : meta.keys;
+                var uniquedKeys = meta.keys ? (0, utils_1.uniq)(meta.keys) : meta.keys;
                 // Convert null key (meaning "all") to undefined for the callback.
                 callbacks.push([callback, uniquedKeys || undefined]);
                 this._pendingCallbacks.delete(callback);
@@ -349,9 +367,9 @@ var StoreBase = /** @class */ (function () {
     // Returns a token you can pass back to unsubscribe.
     StoreBase.prototype.subscribe = function (callback, rawKey) {
         if (rawKey === void 0) { rawKey = StoreBase.Key_All; }
-        var key = utils_1.normalizeKey(rawKey);
+        var key = (0, utils_1.normalizeKey)(rawKey);
         // Adding extra type-checks since the key is often the result of following a string path, which is not type-safe.
-        utils_1.assert(key && utils_1.isString(key), "Trying to subscribe to invalid key: \"" + key + "\"");
+        (0, utils_1.assert)(key && (0, utils_1.isString)(key), "Trying to subscribe to invalid key: \"" + key + "\"");
         var callbacks = this._subscriptions.get(key);
         if (!callbacks) {
             this._subscriptions.set(key, [callback]);
@@ -371,7 +389,7 @@ var StoreBase = /** @class */ (function () {
     StoreBase.prototype.unsubscribe = function (subToken) {
         var sub = this._subsByNum.get(subToken);
         if (!sub) {
-            utils_1.assert(sub, "No subscriptions found for token " + subToken);
+            (0, utils_1.assert)(sub, "No subscriptions found for token " + subToken);
             return;
         }
         var key = sub.key;
@@ -381,7 +399,7 @@ var StoreBase = /** @class */ (function () {
         StoreBase._pendingCallbacks.delete(callback);
         var callbacks = this._subscriptions.get(key);
         if (!callbacks) {
-            utils_1.assert(callbacks, "No subscriptions under key " + key);
+            (0, utils_1.assert)(callbacks, "No subscriptions under key " + key);
             return;
         }
         var index = callbacks.indexOf(callback);
@@ -397,7 +415,7 @@ var StoreBase = /** @class */ (function () {
             }
         }
         else {
-            utils_1.assert(false, 'Subscription not found during unsubscribe...');
+            (0, utils_1.assert)(false, 'Subscription not found during unsubscribe...');
         }
     };
     StoreBase.prototype.trackAutoSubscription = function (subscription) {
@@ -418,12 +436,12 @@ var StoreBase = /** @class */ (function () {
         var key = subscription.key;
         var subs = this._autoSubscriptions.get(key);
         if (!subs) {
-            utils_1.assert(subs, "No subscriptions under key " + key);
+            (0, utils_1.assert)(subs, "No subscriptions under key " + key);
             return;
         }
         var oldLength = subs.length;
-        utils_1.remove(subs, function (sub) { return sub === subscription; });
-        utils_1.assert(subs.length === oldLength - 1, 'Subscription not found during unsubscribe...');
+        (0, utils_1.remove)(subs, function (sub) { return sub === subscription; });
+        (0, utils_1.assert)(subs.length === oldLength - 1, 'Subscription not found during unsubscribe...');
         StoreBase._pendingCallbacks.delete(subscription.callback);
         if (subs.length === 0) {
             // No more callbacks for key, so clear it out
@@ -441,7 +459,7 @@ var StoreBase = /** @class */ (function () {
         // Virtual function, noop default behavior
     };
     StoreBase.prototype._getSubscriptionKeys = function () {
-        return __spread(Array.from(this._subscriptions.keys()), Array.from(this._autoSubscriptions.keys()));
+        return __spreadArray(__spreadArray([], __read(Array.from(this._subscriptions.keys())), false), __read(Array.from(this._autoSubscriptions.keys())), false);
     };
     StoreBase.prototype._isTrackingKey = function (key) {
         return this._subscriptions.has(key) || this._autoSubscriptions.has(key);

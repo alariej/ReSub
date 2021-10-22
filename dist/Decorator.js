@@ -13,6 +13,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.decorate = exports.__unused = void 0;
 // TypeScript should put '__decorate' in the local scope around here.
 var tslib_1 = require("tslib");
 // Unused class. Only here so TypeScript generates the '__decorate' method.

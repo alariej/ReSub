@@ -320,7 +320,7 @@ const autoSubscribeHookHandler = {
         useEffect(() => {
             const token = store.subscribe(() => {
                 // Always trigger a rerender
-                setter({});
+                setter(undefined);
             }, key);
             return () => {
                 store.unsubscribe(token);

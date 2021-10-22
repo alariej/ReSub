@@ -161,7 +161,7 @@ export abstract class StoreBase {
     }
 
     private _setupAllKeySubscription(callback: SubscriptionCallbackFunction, throttledUntil: number | undefined,
-            bypassBlock: boolean): void {
+        bypassBlock: boolean): void {
         const existingMeta = StoreBase._pendingCallbacks.get(callback);
         const newMeta = { keys: null, throttledUntil, bypassBlock };
         // Clear the key list to null for the callback but respect previous throttle/bypass values
@@ -175,7 +175,7 @@ export abstract class StoreBase {
     }
 
     private _setupSpecificKeySubscription(keys: string[], callback: SubscriptionCallbackFunction,
-            throttledUntil: number | undefined, bypassBlock: boolean): void {
+        throttledUntil: number | undefined, bypassBlock: boolean): void {
         const existingMeta = StoreBase._pendingCallbacks.get(callback);
         StoreBase._updateExistingMeta(existingMeta, throttledUntil, bypassBlock);
 

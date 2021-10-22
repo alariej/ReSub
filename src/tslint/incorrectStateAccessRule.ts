@@ -102,7 +102,7 @@ function walk(ctx: Lint.WalkContext<string[]>): void {
             });
 
             while (queue.length > 0) {
-                const method = queue.pop()!!!;
+                const method = queue.pop()!;
 
                 if (!visitedMethods[method.name]) {
                     visitedMethods[method.name] = true;

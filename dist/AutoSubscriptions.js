@@ -9,6 +9,25 @@
 * When an @autoSubscribe method is called, the most recent @enableAutoSubscribe method up the call stack will trigger its handler.
 * When an @warnIfAutoSubscribeEnabled method is called, it will warn if the most recent @enableAutoSubscribe was in a component.
 */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -36,21 +55,20 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.withResubAutoSubscriptions = exports.warnIfAutoSubscribeEnabled = exports.disableWarnings = exports.key = exports.autoSubscribeWithKey = exports.autoSubscribe = exports.AutoSubscribeStore = exports.enableAutoSubscribe = exports.forbidAutoSubscribeWrapper = exports.enableAutoSubscribeWrapper = void 0;
 // -- Property descriptors --
 //
 // Method decorator functions operate on descriptors, so here is a basic overview of descriptors. Every property (including methods) on
@@ -151,7 +169,7 @@ function enableAutoSubscribe(handler) {
     return function (target, propertyKey, descriptor) {
         // Note: T might have other properties (e.g. T = { (): void; bar: number; }). We don't support that and need a cast/assert.
         var existingMethod = descriptor.value;
-        utils_1.assert(utils_1.isFunction(existingMethod), 'Can only use @enableAutoSubscribe on methods');
+        (0, utils_1.assert)((0, utils_1.isFunction)(existingMethod), 'Can only use @enableAutoSubscribe on methods');
         descriptor.value = enableAutoSubscribeWrapper(handler, existingMethod, undefined);
         return descriptor;
     };
@@ -178,7 +196,7 @@ function getMethodMetadata(instance, methodName) {
     }
     return instance.__resubMetadata[methodName];
 }
-exports.AutoSubscribeStore = function (func) {
+var AutoSubscribeStore = function (func) {
     var e_1, _a;
     // Upcast
     var target = instanceTargetToInstanceTargetWithMetadata(func.prototype);
@@ -188,7 +206,7 @@ exports.AutoSubscribeStore = function (func) {
             // Add warning for non-decorated methods.
             for (var _b = __values(Object.getOwnPropertyNames(target)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var property = _c.value;
-                if (utils_1.isFunction(target[property]) && property !== 'constructor') {
+                if ((0, utils_1.isFunction)(target[property]) && property !== 'constructor') {
                     var metaForMethod = target.__resubMetadata[property];
                     if (!metaForMethod || !metaForMethod.hasAutoSubscribeDecorator) {
                         Decorator.decorate([warnIfAutoSubscribeEnabled], target, property, null);
@@ -206,6 +224,7 @@ exports.AutoSubscribeStore = function (func) {
     }
     return func;
 };
+exports.AutoSubscribeStore = AutoSubscribeStore;
 // Triggers the handler of the most recent @enableAutoSubscribe method called up the call stack.
 function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
     if (shallow === void 0) { shallow = false; }
@@ -218,7 +237,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
         // Save the method being decorated. Note this might not be the original method if already decorated.
         // Note: T might have other properties (e.g. T = { (): void; bar: number; }). We don't support that and need a cast/assert.
         var existingMethod = descriptor.value;
-        utils_1.assert(utils_1.isFunction(existingMethod), 'Can only use @autoSubscribe on methods');
+        (0, utils_1.assert)((0, utils_1.isFunction)(existingMethod), 'Can only use @autoSubscribe on methods');
         // Note: we need to be given 'this', so cannot use '=>' syntax.
         descriptor.value = function AutoSubscribe() {
             var _this = this;
@@ -226,7 +245,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            utils_1.assert(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodNameString + "\"");
+            (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodNameString + "\"");
             if (Options_1.default.development) {
                 // This is a check to see if we're in a rendering function component function.  If you are, then calling useState will
                 // noop.  If you aren't, then useState will throw an exception.  So, we want to make sure that either you're inside render
@@ -235,13 +254,13 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
                 // subscriptions in that instance.
                 var inRender = false;
                 try {
-                    react_1.useState();
+                    (0, react_1.useState)();
                     inRender = true;
                 }
                 catch (_a) {
                     // I guess we weren't in render.
                 }
-                utils_1.assert(!inRender || !!handlerWrapper, 'Autosubscribe method called from inside a render function ' +
+                (0, utils_1.assert)(!inRender || !!handlerWrapper, 'Autosubscribe method called from inside a render function ' +
                     'or function component without using withResubAutoSubscriptions');
             }
             // Just call the method if no handler is setup.
@@ -251,7 +270,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             }
             // If this is forbidding auto-subscribe then do not go through the auto-subscribe path below.
             if (scopedHandleWrapper.useAutoSubscriptions === 2 /* Forbid */) {
-                utils_1.assert(false, "Only Store methods WITHOUT the " +
+                (0, utils_1.assert)(false, "Only Store methods WITHOUT the " +
                     ("@autoSubscribe decorator can be called right now (e.g. in render): \"" + methodNameString + "\""));
                 return existingMethod.apply(this, args);
             }
@@ -260,12 +279,12 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             if (metaForMethod.keyIndexes) {
                 keyParamValues = metaForMethod.keyIndexes.map(function (index) {
                     var keyArg = args[index];
-                    if (utils_1.isNumber(keyArg)) {
+                    if ((0, utils_1.isNumber)(keyArg)) {
                         keyArg = keyArg.toString();
                     }
-                    utils_1.assert(keyArg, "@key parameter must be given a non-empty string or number: " +
+                    (0, utils_1.assert)(keyArg, "@key parameter must be given a non-empty string or number: " +
                         ("\"" + methodNameString + "\"@" + index + " was given " + JSON.stringify(keyArg)));
-                    utils_1.assert(utils_1.isString(keyArg), "@key parameter must be given a string or number: " +
+                    (0, utils_1.assert)((0, utils_1.isString)(keyArg), "@key parameter must be given a string or number: " +
                         ("\"" + methodNameString + "\"@" + index));
                     return keyArg;
                 });
@@ -275,8 +294,8 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             // If there are multiple keys in the @autosubscribewithkey list, go through each one and do the
             // same thing (@key then value).  If there's neither @key nor @autosubscribewithkey, it's Key_All.
             var specificKeyValues = (autoSubscribeKeys && autoSubscribeKeys.length > 0) ?
-                autoSubscribeKeys.map(function (autoSubKey) { return utils_1.formCompoundKey.apply(void 0, __spread(keyParamValues.concat(autoSubKey))); }) :
-                [(keyParamValues.length > 0) ? utils_1.formCompoundKey.apply(void 0, __spread(keyParamValues)) : StoreBase_1.StoreBase.Key_All];
+                autoSubscribeKeys.map(function (autoSubKey) { return utils_1.formCompoundKey.apply(void 0, __spreadArray([], __read(keyParamValues.concat(autoSubKey)), false)); }) :
+                [(keyParamValues.length > 0) ? utils_1.formCompoundKey.apply(void 0, __spreadArray([], __read(keyParamValues), false)) : StoreBase_1.StoreBase.Key_All];
             // Let the handler know about this auto-subscriptions, then proceed to the existing method.
             var wasInAutoSubscribe;
             var result = _tryFinally(function () {
@@ -316,8 +335,8 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
 }
 exports.autoSubscribe = makeAutoSubscribeDecorator(true, undefined);
 function autoSubscribeWithKey(keyOrKeys) {
-    utils_1.assert(keyOrKeys || utils_1.isNumber(keyOrKeys), 'Must specify a key when using autoSubscribeWithKey');
-    return makeAutoSubscribeDecorator(true, utils_1.normalizeKeys(keyOrKeys));
+    (0, utils_1.assert)(keyOrKeys || (0, utils_1.isNumber)(keyOrKeys), 'Must specify a key when using autoSubscribeWithKey');
+    return makeAutoSubscribeDecorator(true, (0, utils_1.normalizeKeys)(keyOrKeys));
 }
 exports.autoSubscribeWithKey = autoSubscribeWithKey;
 // Records which parameter of an @autoSubscribe method is the key used for the subscription.
@@ -350,7 +369,7 @@ function disableWarnings(target, methodName, descriptor) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        utils_1.assert(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodName + "\"");
+        (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodName + "\"");
         // Just call the method if no handler is setup.
         var scopedHandleWrapper = handlerWrapper;
         if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* None */) {
@@ -398,8 +417,8 @@ function warnIfAutoSubscribeEnabled(target, methodName, descriptor) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        utils_1.assert(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodName + "\"");
-        utils_1.assert(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* Enabled */ || handlerWrapper.inAutoSubscribe, "Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): \"" + methodName + "\"");
+        (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodName + "\"");
+        (0, utils_1.assert)(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* Enabled */ || handlerWrapper.inAutoSubscribe, "Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): \"" + methodName + "\"");
         return originalMethod.apply(this, args);
     };
     return descriptor;
@@ -407,11 +426,11 @@ function warnIfAutoSubscribeEnabled(target, methodName, descriptor) {
 exports.warnIfAutoSubscribeEnabled = warnIfAutoSubscribeEnabled;
 var autoSubscribeHookHandler = {
     handle: function (self, store, key) {
-        var _a = __read(react_1.useState(), 2), setter = _a[1];
-        react_1.useEffect(function () {
+        var _a = __read((0, react_1.useState)(), 2), setter = _a[1];
+        (0, react_1.useEffect)(function () {
             var token = store.subscribe(function () {
                 // Always trigger a rerender
-                setter({});
+                setter(undefined);
             }, key);
             return function () {
                 store.unsubscribe(token);

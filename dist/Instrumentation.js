@@ -5,6 +5,7 @@
  * Copyright: Microsoft 2017
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.setPerformanceMarkingEnabled = exports.impl = exports.Instrumentation = void 0;
 var utils_1 = require("./utils");
 var BuildStateBeginMark = 'ComponentBase._buildState begin';
 var BuildStateEndMark = 'ComponentBase._buildState end';

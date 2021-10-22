@@ -115,7 +115,7 @@ interface HandlerWraper {
 let handlerWrapper: HandlerWraper | undefined;
 
 function createAutoSubscribeWrapper<T extends Function>(handler: AutoSubscribeHandler | undefined, useAutoSubscriptions: AutoOptions,
-        existingMethod: T, thisArg: any): T {
+    existingMethod: T, thisArg: any): T {
     // Note: we need to be given 'this', so cannot use '=>' syntax.
     // Note: T might have other properties (e.g. T = { (): void; bar: number; }). We don't support that and need a cast.
     return function AutoSubscribeWrapper(this: any, ...args: any[]) {
@@ -300,7 +300,7 @@ function makeAutoSubscribeDecorator(shallow = false, autoSubscribeKeys?: string[
                 // Let the handler know about this auto-subscription.
                 for (const specificKeyValue of specificKeyValues) {
                     scopedHandleWrapper
-                        .handler!!!
+                        .handler!
                         .handle
                         .apply(scopedHandleWrapper.instance, [scopedHandleWrapper.instance, this, specificKeyValue]);
                 }
@@ -339,8 +339,8 @@ export function key(target: InstanceTarget, methodName: string, index: number): 
 }
 
 export function disableWarnings<T extends Function>(target: InstanceTarget,
-        methodName: string,
-        descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {
+    methodName: string,
+    descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {
     const targetWithMetadata = instanceTargetToInstanceTargetWithMetadata(target);
 
     // Record that the target is decorated.
@@ -353,7 +353,7 @@ export function disableWarnings<T extends Function>(target: InstanceTarget,
     }
 
     // Save the method being decorated. Note this might be another decorator method.
-    const existingMethod = descriptor.value!!!;
+    const existingMethod = descriptor.value!;
 
     // Note: we need to be given 'this', so cannot use '=>' syntax.
     // Note: T might have other properties (e.g. T = { (): void; bar: number; }). We don't support that and need a cast.
@@ -394,8 +394,8 @@ export function disableWarnings<T extends Function>(target: InstanceTarget,
 // Warns if the method is used in components' @enableAutoSubscribe methods (relying on handler.enableWarnings). E.g.
 // _buildState.
 export function warnIfAutoSubscribeEnabled<T extends Function>(target: InstanceTarget,
-        methodName: string,
-        descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {
+    methodName: string,
+    descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {
     if (!Options.development) {
         // Disable warning for production.
         return descriptor;
@@ -409,7 +409,7 @@ export function warnIfAutoSubscribeEnabled<T extends Function>(target: InstanceT
     }
 
     // Save the method being decorated. Note this might be another decorator method.
-    const originalMethod = descriptor.value!!!;
+    const originalMethod = descriptor.value!;
 
     // Note: we need to be given 'this', so cannot use '=>' syntax.
     // Note: T might have other properties (e.g. T = { (): void; bar: number; }). We don't support that and need a cast.
@@ -430,7 +430,7 @@ const autoSubscribeHookHandler = {
         useEffect(() => {
             const token = store.subscribe(() => {
                 // Always trigger a rerender
-                setter({});
+                setter(undefined);
             }, key);
             return () => {
                 store.unsubscribe(token);

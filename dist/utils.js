@@ -15,6 +15,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.find = exports.uniq = exports.remove = exports.assert = exports.formCompoundKey = exports.normalizeKeys = exports.normalizeKey = exports.isNumber = exports.isString = exports.isFunction = exports.noop = void 0;
 var CompoundKeyJoinerString = '%&';
 function noop() {
     // noop
@@ -32,28 +33,33 @@ function isNumber(object) {
     return typeof object === 'number';
 }
 exports.isNumber = isNumber;
-exports.normalizeKey = function (key) { return (isNumber(key) ? key.toString() : key); };
-exports.normalizeKeys = function (keyOrKeys) { return (Array.isArray(keyOrKeys) ? keyOrKeys.map(exports.normalizeKey) : [exports.normalizeKey(keyOrKeys)]); };
-exports.formCompoundKey = function () {
+var normalizeKey = function (key) { return (isNumber(key) ? key.toString() : key); };
+exports.normalizeKey = normalizeKey;
+var normalizeKeys = function (keyOrKeys) { return (Array.isArray(keyOrKeys) ? keyOrKeys.map(exports.normalizeKey) : [(0, exports.normalizeKey)(keyOrKeys)]); };
+exports.normalizeKeys = normalizeKeys;
+var formCompoundKey = function () {
     var keys = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         keys[_i] = arguments[_i];
     }
     return keys.join(CompoundKeyJoinerString);
 };
-exports.assert = function (cond, message) {
+exports.formCompoundKey = formCompoundKey;
+var assert = function (cond, message) {
     if (!cond) {
         throw new Error("[resub] " + (message || 'Assertion Failed'));
     }
 };
-exports.remove = function (array, predicate) {
+exports.assert = assert;
+var remove = function (array, predicate) {
     for (var i = array.length - 1; i >= 0; i--) {
         if (predicate(array[i])) {
             array.splice(i, 1);
         }
     }
 };
-exports.uniq = function (array) {
+exports.remove = remove;
+var uniq = function (array) {
     var e_1, _a;
     var set = new Set(array);
     if (isFunction(Array.from)) {
@@ -75,7 +81,8 @@ exports.uniq = function (array) {
     }
     return uniq;
 };
-exports.find = function (array, predicate) {
+exports.uniq = uniq;
+var find = function (array, predicate) {
     if (isFunction(array.find)) {
         return array.find(predicate);
     }
@@ -87,3 +94,4 @@ exports.find = function (array, predicate) {
     }
     return undefined;
 };
+exports.find = find;
