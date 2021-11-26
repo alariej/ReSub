@@ -44,14 +44,14 @@ var Instrumentation = /** @class */ (function () {
         this._perf.mark(BuildStateBeginMark);
     };
     Instrumentation.prototype.endBuildState = function (target) {
-        var measureName = "\uD83C\uDF00 " + (target.name || 'ComponentBase') + " build state";
+        var measureName = "\uD83C\uDF00 ".concat(target.name || 'ComponentBase', " build state");
         this._measure(measureName, BuildStateBeginMark, BuildStateEndMark);
     };
     Instrumentation.prototype.beginInvokeStoreCallbacks = function () {
         this._perf.mark(CallbackBeginMark);
     };
     Instrumentation.prototype.endInvokeStoreCallbacks = function (target, count) {
-        var measureName = "\uD83D\uDCE6 " + (target.name || 'StoreBase') + " callbacks(" + count + ")";
+        var measureName = "\uD83D\uDCE6 ".concat(target.name || 'StoreBase', " callbacks(").concat(count, ")");
         this._measure(measureName, CallbackBeginMark, CallbackEndMark);
     };
     return Instrumentation;

@@ -84,7 +84,7 @@ var StoreBase = /** @class */ (function () {
         this._autoSubscriptions = new Map();
         this._subTokenNum = 1;
         this._subsByNum = new Map();
-        this.storeId = "store" + StoreBase._storeIdCounter++;
+        this.storeId = "store".concat(StoreBase._storeIdCounter++);
         this._handleThrottledCallbacks = function () {
             _this._throttleData = undefined;
             StoreBase._resolveCallbacks();
@@ -369,7 +369,7 @@ var StoreBase = /** @class */ (function () {
         if (rawKey === void 0) { rawKey = StoreBase.Key_All; }
         var key = (0, utils_1.normalizeKey)(rawKey);
         // Adding extra type-checks since the key is often the result of following a string path, which is not type-safe.
-        (0, utils_1.assert)(key && (0, utils_1.isString)(key), "Trying to subscribe to invalid key: \"" + key + "\"");
+        (0, utils_1.assert)(key && (0, utils_1.isString)(key), "Trying to subscribe to invalid key: \"".concat(key, "\""));
         var callbacks = this._subscriptions.get(key);
         if (!callbacks) {
             this._subscriptions.set(key, [callback]);
@@ -389,7 +389,7 @@ var StoreBase = /** @class */ (function () {
     StoreBase.prototype.unsubscribe = function (subToken) {
         var sub = this._subsByNum.get(subToken);
         if (!sub) {
-            (0, utils_1.assert)(sub, "No subscriptions found for token " + subToken);
+            (0, utils_1.assert)(sub, "No subscriptions found for token ".concat(subToken));
             return;
         }
         var key = sub.key;
@@ -399,7 +399,7 @@ var StoreBase = /** @class */ (function () {
         StoreBase._pendingCallbacks.delete(callback);
         var callbacks = this._subscriptions.get(key);
         if (!callbacks) {
-            (0, utils_1.assert)(callbacks, "No subscriptions under key " + key);
+            (0, utils_1.assert)(callbacks, "No subscriptions under key ".concat(key));
             return;
         }
         var index = callbacks.indexOf(callback);
@@ -436,7 +436,7 @@ var StoreBase = /** @class */ (function () {
         var key = subscription.key;
         var subs = this._autoSubscriptions.get(key);
         if (!subs) {
-            (0, utils_1.assert)(subs, "No subscriptions under key " + key);
+            (0, utils_1.assert)(subs, "No subscriptions under key ".concat(key));
             return;
         }
         var oldLength = subs.length;

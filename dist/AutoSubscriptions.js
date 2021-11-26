@@ -245,7 +245,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodNameString + "\"");
+            (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"".concat(methodNameString, "\""));
             if (Options_1.default.development) {
                 // This is a check to see if we're in a rendering function component function.  If you are, then calling useState will
                 // noop.  If you aren't, then useState will throw an exception.  So, we want to make sure that either you're inside render
@@ -271,7 +271,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             // If this is forbidding auto-subscribe then do not go through the auto-subscribe path below.
             if (scopedHandleWrapper.useAutoSubscriptions === 2 /* Forbid */) {
                 (0, utils_1.assert)(false, "Only Store methods WITHOUT the " +
-                    ("@autoSubscribe decorator can be called right now (e.g. in render): \"" + methodNameString + "\""));
+                    "@autoSubscribe decorator can be called right now (e.g. in render): \"".concat(methodNameString, "\""));
                 return existingMethod.apply(this, args);
             }
             // Try to find an @key parameter in the target's metadata and form initial Key(s) from it/them.
@@ -283,9 +283,9 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
                         keyArg = keyArg.toString();
                     }
                     (0, utils_1.assert)(keyArg, "@key parameter must be given a non-empty string or number: " +
-                        ("\"" + methodNameString + "\"@" + index + " was given " + JSON.stringify(keyArg)));
+                        "\"".concat(methodNameString, "\"@").concat(index, " was given ").concat(JSON.stringify(keyArg)));
                     (0, utils_1.assert)((0, utils_1.isString)(keyArg), "@key parameter must be given a string or number: " +
-                        ("\"" + methodNameString + "\"@" + index));
+                        "\"".concat(methodNameString, "\"@").concat(index));
                     return keyArg;
                 });
             }
@@ -369,7 +369,7 @@ function disableWarnings(target, methodName, descriptor) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodName + "\"");
+        (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"".concat(methodName, "\""));
         // Just call the method if no handler is setup.
         var scopedHandleWrapper = handlerWrapper;
         if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* None */) {
@@ -417,8 +417,8 @@ function warnIfAutoSubscribeEnabled(target, methodName, descriptor) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"" + methodName + "\"");
-        (0, utils_1.assert)(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* Enabled */ || handlerWrapper.inAutoSubscribe, "Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): \"" + methodName + "\"");
+        (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"".concat(methodName, "\""));
+        (0, utils_1.assert)(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* Enabled */ || handlerWrapper.inAutoSubscribe, "Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): \"".concat(methodName, "\""));
         return originalMethod.apply(this, args);
     };
     return descriptor;

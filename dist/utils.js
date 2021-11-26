@@ -47,7 +47,7 @@ var formCompoundKey = function () {
 exports.formCompoundKey = formCompoundKey;
 var assert = function (cond, message) {
     if (!cond) {
-        throw new Error("[resub] " + (message || 'Assertion Failed'));
+        throw new Error("[resub] ".concat(message || 'Assertion Failed'));
     }
 };
 exports.assert = assert;
