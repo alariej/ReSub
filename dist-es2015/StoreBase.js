@@ -27,7 +27,6 @@ export class StoreBase {
             StoreBase._resolveCallbacks();
         };
     }
-    ;
     static pushTriggerBlock() {
         this._triggerBlockCount++;
     }
