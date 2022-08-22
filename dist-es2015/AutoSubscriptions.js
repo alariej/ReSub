@@ -88,14 +88,14 @@ function createAutoSubscribeWrapper(handler, useAutoSubscriptions, existingMetho
 }
 // Returns a new function with auto-subscriptions enabled.
 export function enableAutoSubscribeWrapper(handler, existingMethod, thisArg) {
-    return createAutoSubscribeWrapper(handler, 1 /* Enabled */, existingMethod, thisArg);
+    return createAutoSubscribeWrapper(handler, 1 /* AutoOptions.Enabled */, existingMethod, thisArg);
 }
 // Returns a new function that warns if any auto-subscriptions would have been encountered.
 export function forbidAutoSubscribeWrapper(existingMethod, thisArg) {
     if (!Options.development) {
         return thisArg ? existingMethod.bind(thisArg) : existingMethod;
     }
-    return createAutoSubscribeWrapper(undefined, 2 /* Forbid */, existingMethod, thisArg);
+    return createAutoSubscribeWrapper(undefined, 2 /* AutoOptions.Forbid */, existingMethod, thisArg);
 }
 // Hooks up the handler for @autoSubscribe methods called later down the call stack.
 export function enableAutoSubscribe(handler) {
@@ -179,11 +179,11 @@ function makeAutoSubscribeDecorator(shallow = false, autoSubscribeKeys) {
             }
             // Just call the method if no handler is setup.
             const scopedHandleWrapper = handlerWrapper;
-            if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* None */) {
+            if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* AutoOptions.None */) {
                 return existingMethod.apply(this, args);
             }
             // If this is forbidding auto-subscribe then do not go through the auto-subscribe path below.
-            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* Forbid */) {
+            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* AutoOptions.Forbid */) {
                 assert(false, `Only Store methods WITHOUT the ` +
                     `@autoSubscribe decorator can be called right now (e.g. in render): "${methodNameString}"`);
                 return existingMethod.apply(this, args);
@@ -214,7 +214,7 @@ function makeAutoSubscribeDecorator(shallow = false, autoSubscribeKeys) {
             let wasInAutoSubscribe;
             const result = _tryFinally(() => {
                 // Disable further auto-subscriptions if shallow.
-                scopedHandleWrapper.useAutoSubscriptions = shallow ? 0 /* None */ : 1 /* Enabled */;
+                scopedHandleWrapper.useAutoSubscriptions = shallow ? 0 /* AutoOptions.None */ : 1 /* AutoOptions.Enabled */;
                 // Any further @warnIfAutoSubscribeEnabled methods are safe.
                 wasInAutoSubscribe = scopedHandleWrapper.inAutoSubscribe;
                 scopedHandleWrapper.inAutoSubscribe = true;
@@ -228,7 +228,7 @@ function makeAutoSubscribeDecorator(shallow = false, autoSubscribeKeys) {
                 return existingMethod.apply(this, args);
             }, () => {
                 // Must have been previously enabled to reach here.
-                scopedHandleWrapper.useAutoSubscriptions = 1 /* Enabled */;
+                scopedHandleWrapper.useAutoSubscriptions = 1 /* AutoOptions.Enabled */;
                 scopedHandleWrapper.inAutoSubscribe = wasInAutoSubscribe;
             });
             return result;
@@ -268,7 +268,7 @@ export function disableWarnings(target, methodName, descriptor) {
         assert(targetWithMetadata.__resubMetadata.__decorated, `Missing @AutoSubscribeStore class decorator: "${methodName}"`);
         // Just call the method if no handler is setup.
         const scopedHandleWrapper = handlerWrapper;
-        if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* None */) {
+        if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* AutoOptions.None */) {
             return existingMethod.apply(this, args);
         }
         let wasInAutoSubscribe;
@@ -279,8 +279,8 @@ export function disableWarnings(target, methodName, descriptor) {
             scopedHandleWrapper.inAutoSubscribe = true;
             // If in a forbidAutoSubscribeWrapper method, any further @autoSubscribe methods are safe.
             wasUseAutoSubscriptions = scopedHandleWrapper.useAutoSubscriptions;
-            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* Forbid */) {
-                scopedHandleWrapper.useAutoSubscriptions = 0 /* None */;
+            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* AutoOptions.Forbid */) {
+                scopedHandleWrapper.useAutoSubscriptions = 0 /* AutoOptions.None */;
             }
             return existingMethod.apply(this, args);
         }, () => {
@@ -309,7 +309,7 @@ export function warnIfAutoSubscribeEnabled(target, methodName, descriptor) {
     // Note: T might have other properties (e.g. T = { (): void; bar: number; }). We don't support that and need a cast.
     descriptor.value = function WarnIfAutoSubscribeEnabled(...args) {
         assert(targetWithMetadata.__resubMetadata.__decorated, `Missing @AutoSubscribeStore class decorator: "${methodName}"`);
-        assert(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* Enabled */ || handlerWrapper.inAutoSubscribe, `Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): "${methodName}"`);
+        assert(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* AutoOptions.Enabled */ || handlerWrapper.inAutoSubscribe, `Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): "${methodName}"`);
         return originalMethod.apply(this, args);
     };
     return descriptor;
@@ -329,5 +329,5 @@ const autoSubscribeHookHandler = {
     },
 };
 export function withResubAutoSubscriptions(func) {
-    return createAutoSubscribeWrapper(autoSubscribeHookHandler, 1 /* Enabled */, func, autoSubscribeHookHandler);
+    return createAutoSubscribeWrapper(autoSubscribeHookHandler, 1 /* AutoOptions.Enabled */, func, autoSubscribeHookHandler);
 }

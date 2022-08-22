@@ -19,7 +19,7 @@ var Instrumentation = /** @class */ (function () {
         var g = typeof global !== 'undefined' ? global : undefined;
         var w = typeof window !== 'undefined' ? window : undefined;
         var performance = (g || w || { performance: undefined }).performance;
-        if (performance && performance.mark && performance.measure) {
+        if (performance) {
             return performance;
         }
         return {

@@ -157,7 +157,7 @@ function createAutoSubscribeWrapper(handler, useAutoSubscriptions, existingMetho
 }
 // Returns a new function with auto-subscriptions enabled.
 function enableAutoSubscribeWrapper(handler, existingMethod, thisArg) {
-    return createAutoSubscribeWrapper(handler, 1 /* Enabled */, existingMethod, thisArg);
+    return createAutoSubscribeWrapper(handler, 1 /* AutoOptions.Enabled */, existingMethod, thisArg);
 }
 exports.enableAutoSubscribeWrapper = enableAutoSubscribeWrapper;
 // Returns a new function that warns if any auto-subscriptions would have been encountered.
@@ -165,7 +165,7 @@ function forbidAutoSubscribeWrapper(existingMethod, thisArg) {
     if (!Options_1.default.development) {
         return thisArg ? existingMethod.bind(thisArg) : existingMethod;
     }
-    return createAutoSubscribeWrapper(undefined, 2 /* Forbid */, existingMethod, thisArg);
+    return createAutoSubscribeWrapper(undefined, 2 /* AutoOptions.Forbid */, existingMethod, thisArg);
 }
 exports.forbidAutoSubscribeWrapper = forbidAutoSubscribeWrapper;
 // Hooks up the handler for @autoSubscribe methods called later down the call stack.
@@ -269,11 +269,11 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             }
             // Just call the method if no handler is setup.
             var scopedHandleWrapper = handlerWrapper;
-            if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* None */) {
+            if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* AutoOptions.None */) {
                 return existingMethod.apply(this, args);
             }
             // If this is forbidding auto-subscribe then do not go through the auto-subscribe path below.
-            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* Forbid */) {
+            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* AutoOptions.Forbid */) {
                 (0, utils_1.assert)(false, "Only Store methods WITHOUT the " +
                     "@autoSubscribe decorator can be called right now (e.g. in render): \"".concat(methodNameString, "\""));
                 return existingMethod.apply(this, args);
@@ -305,7 +305,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
             var result = _tryFinally(function () {
                 var e_2, _a;
                 // Disable further auto-subscriptions if shallow.
-                scopedHandleWrapper.useAutoSubscriptions = shallow ? 0 /* None */ : 1 /* Enabled */;
+                scopedHandleWrapper.useAutoSubscriptions = shallow ? 0 /* AutoOptions.None */ : 1 /* AutoOptions.Enabled */;
                 // Any further @warnIfAutoSubscribeEnabled methods are safe.
                 wasInAutoSubscribe = scopedHandleWrapper.inAutoSubscribe;
                 scopedHandleWrapper.inAutoSubscribe = true;
@@ -329,7 +329,7 @@ function makeAutoSubscribeDecorator(shallow, autoSubscribeKeys) {
                 return existingMethod.apply(_this, args);
             }, function () {
                 // Must have been previously enabled to reach here.
-                scopedHandleWrapper.useAutoSubscriptions = 1 /* Enabled */;
+                scopedHandleWrapper.useAutoSubscriptions = 1 /* AutoOptions.Enabled */;
                 scopedHandleWrapper.inAutoSubscribe = wasInAutoSubscribe;
             });
             return result;
@@ -376,7 +376,7 @@ function disableWarnings(target, methodName, descriptor) {
         (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"".concat(methodName, "\""));
         // Just call the method if no handler is setup.
         var scopedHandleWrapper = handlerWrapper;
-        if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* None */) {
+        if (!scopedHandleWrapper || scopedHandleWrapper.useAutoSubscriptions === 0 /* AutoOptions.None */) {
             return existingMethod.apply(this, args);
         }
         var wasInAutoSubscribe;
@@ -387,8 +387,8 @@ function disableWarnings(target, methodName, descriptor) {
             scopedHandleWrapper.inAutoSubscribe = true;
             // If in a forbidAutoSubscribeWrapper method, any further @autoSubscribe methods are safe.
             wasUseAutoSubscriptions = scopedHandleWrapper.useAutoSubscriptions;
-            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* Forbid */) {
-                scopedHandleWrapper.useAutoSubscriptions = 0 /* None */;
+            if (scopedHandleWrapper.useAutoSubscriptions === 2 /* AutoOptions.Forbid */) {
+                scopedHandleWrapper.useAutoSubscriptions = 0 /* AutoOptions.None */;
             }
             return existingMethod.apply(_this, args);
         }, function () {
@@ -422,7 +422,7 @@ function warnIfAutoSubscribeEnabled(target, methodName, descriptor) {
             args[_i] = arguments[_i];
         }
         (0, utils_1.assert)(targetWithMetadata.__resubMetadata.__decorated, "Missing @AutoSubscribeStore class decorator: \"".concat(methodName, "\""));
-        (0, utils_1.assert)(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* Enabled */ || handlerWrapper.inAutoSubscribe, "Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): \"".concat(methodName, "\""));
+        (0, utils_1.assert)(!handlerWrapper || handlerWrapper.useAutoSubscriptions !== 1 /* AutoOptions.Enabled */ || handlerWrapper.inAutoSubscribe, "Only Store methods with the @autoSubscribe decorator can be called right now (e.g. in _buildState): \"".concat(methodName, "\""));
         return originalMethod.apply(this, args);
     };
     return descriptor;
@@ -443,6 +443,6 @@ var autoSubscribeHookHandler = {
     },
 };
 function withResubAutoSubscriptions(func) {
-    return createAutoSubscribeWrapper(autoSubscribeHookHandler, 1 /* Enabled */, func, autoSubscribeHookHandler);
+    return createAutoSubscribeWrapper(autoSubscribeHookHandler, 1 /* AutoOptions.Enabled */, func, autoSubscribeHookHandler);
 }
 exports.withResubAutoSubscriptions = withResubAutoSubscriptions;
